@@ -51,16 +51,17 @@ function App() {
     const context = photo?.getContext("2d");
 
     let width = 414;
-    let height = width / (16 / 9);
+    let height = width / (16 / 11);
 
     if (isMobile) {
       width = 300;
-      height = width / (16 / 9);
+      height = width / (16 / 11);
     }
 
     if (video && context && photo) {
       photo.width = width;
       photo.height = height;
+
       context.drawImage(video, 0, 0, photo.width, photo.height);
     }
 
@@ -129,7 +130,7 @@ function App() {
 
       <div
         className={`
-          fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center 
+          fixed inset-0 z-[100] bg-black bg-opacity-50 flex justify-center items-center 
           ${hasPhoto ? 'translate-x-0' : 'translate-x-[100%]'}
           transition-transform duration-300 ease-in-out
           }`
@@ -138,7 +139,7 @@ function App() {
         <div className="relative">
           <canvas ref={photoRef}></canvas>
           <button
-            className="absolute top-[-20%] right-0 w-[40px] h-[40px] text-[#fff] flex items-center justify-center rounded-[50%] border-[1px] border-solid border-[#18181a] bg-[#18181a] transition hover:bg-[#fff] hover:text-[#18181a]"
+            className="absolute top-[-26%] right-0 w-[40px] h-[40px] text-[#fff] flex items-center justify-center rounded-[50%] border-[1px] border-solid border-[#18181a] bg-[#18181a] transition hover:bg-[#fff] hover:text-[#18181a]"
             onClick={handleClearResult}
           >
             <IoMdClose className="text-[20px]" />
