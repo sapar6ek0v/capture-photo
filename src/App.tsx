@@ -1,13 +1,13 @@
-import { useRef, useEffect, useState, useCallback } from 'react';
+import { useRef, useEffect, useState } from 'react';
 import { IoMdClose } from "react-icons/io";
 import { TbLoader3 } from "react-icons/tb";
-import { MobileView, isMobile } from 'react-device-detect';
+import { isMobile } from 'react-device-detect';
 import './App.css';
 
-enum StreamTypes {
-  FRONT_CAMERA = 'FRONT_CAMERA',
-  BACK_CAMERA = 'BACK_CAMERA',
-}
+// enum StreamTypes {
+//   FRONT_CAMERA = 'FRONT_CAMERA',
+//   BACK_CAMERA = 'BACK_CAMERA',
+// }
 
 function App() {
   const videoRef = useRef<HTMLVideoElement | null>(null);
@@ -15,16 +15,16 @@ function App() {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [hasPhoto, setHasPhoto] = useState<boolean>(false);
   const [stream, setStream] = useState<MediaStream | null>(null);
-  const [streamType, setStreamType] = useState<StreamTypes>(StreamTypes.BACK_CAMERA);
+  // const [streamType, setStreamType] = useState<StreamTypes>(StreamTypes.BACK_CAMERA);
 
-  const getVideoStream = useCallback(async () => {
+  const getVideoStream = async () => {
     setIsLoading(true);
     try {
-      let stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
+      const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
 
-      if (isMobile) {
-        stream = streamType === StreamTypes.FRONT_CAMERA ? stream : await navigator.mediaDevices.getUserMedia({ video: { facingMode: { exact: 'environment' } } });
-      }
+      // if (isMobile) {
+      //   stream = streamType === StreamTypes.FRONT_CAMERA ? stream : await navigator.mediaDevices.getUserMedia({ video: { facingMode: { exact: 'environment' } } });
+      // }
 
       const video = videoRef.current;
 
@@ -39,11 +39,11 @@ function App() {
       console.error("Error accessing camera: " + error);
       setIsLoading(false);
     }
-  }, [videoRef, streamType]);
+  };
 
   useEffect(() => {
     getVideoStream();
-  }, [videoRef, streamType, getVideoStream, isMobile]);
+  }, [videoRef]);
 
   const handleTakePhoto = () => {
     setHasPhoto(true);
@@ -85,19 +85,19 @@ function App() {
     getVideoStream();
   };
 
-  const toggleStreamType = () => {
-    if (streamType === StreamTypes.FRONT_CAMERA) {
-      setStreamType(StreamTypes.BACK_CAMERA);
-    } else {
-      setStreamType(StreamTypes.FRONT_CAMERA);
-    }
-  };
+  // const toggleStreamType = () => {
+  //   if (streamType === StreamTypes.FRONT_CAMERA) {
+  //     setStreamType(StreamTypes.BACK_CAMERA);
+  //   } else {
+  //     setStreamType(StreamTypes.FRONT_CAMERA);
+  //   }
+  // };
 
   return (
     <section
       className="relative w-full h-full min-h-[100vh] flex flex-col items-center justify-center gap-[20px]"
     >
-      <MobileView>
+      {/* <MobileView>
         <div className="flex items-center justify-center">
           <button
             onClick={toggleStreamType}
@@ -107,7 +107,7 @@ function App() {
               ? 'Заднея камера' : 'Передная камера'}
           </button>
         </div>
-      </MobileView>
+      </MobileView> */}
 
       <div className="flex justify-center items-center">
         {!isLoading ?
