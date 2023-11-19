@@ -43,7 +43,7 @@ function App() {
 
   useEffect(() => {
     getVideoStream();
-  }, [videoRef, streamType, getVideoStream]);
+  }, [videoRef, streamType, getVideoStream, isMobile]);
 
   const handleTakePhoto = () => {
     setHasPhoto(true);
