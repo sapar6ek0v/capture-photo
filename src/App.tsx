@@ -12,13 +12,12 @@ import './App.css';
 function App() {
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const photoRef = useRef<HTMLCanvasElement | null>(null);
-  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
   const [hasPhoto, setHasPhoto] = useState<boolean>(false);
   const [stream, setStream] = useState<MediaStream | null>(null);
   // const [streamType, setStreamType] = useState<StreamTypes>(StreamTypes.BACK_CAMERA);
 
   const getVideoStream = async () => {
-    setIsLoading(true);
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
 
@@ -81,6 +80,7 @@ function App() {
 
     context.clearRect(0, 0, photo.width, photo.height);
     setHasPhoto(false);
+    setIsLoading(false);
 
     getVideoStream();
   };
@@ -92,7 +92,7 @@ function App() {
   //     setStreamType(StreamTypes.FRONT_CAMERA);
   //   }
   // };
-
+  console.log(videoRef)
   return (
     <section
       className="relative w-full h-full min-h-[100vh] flex flex-col items-center justify-center gap-[20px]"
