@@ -1,24 +1,31 @@
-import { useRef, useEffect, useState } from 'react';
+import { useRef, useEffect, useState, useCallback } from 'react';
 import { IoMdClose } from "react-icons/io";
-import { MobileView } from 'react-device-detect';
+import { TbLoader3 } from "react-icons/tb";
+import { MobileView, isMobile } from 'react-device-detect';
 import './App.css';
 
 enum StreamTypes {
   FRONT_CAMERA = 'FRONT_CAMERA',
   BACK_CAMERA = 'BACK_CAMERA',
-  ENVIRONMENT = 'ENVIRONMENT'
 }
 
 function App() {
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const photoRef = useRef<HTMLCanvasElement | null>(null);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const [hasPhoto, setHasPhoto] = useState<boolean>(false);
   const [stream, setStream] = useState<MediaStream | null>(null);
-  const [streamType, setStreamType] = useState<StreamTypes>(StreamTypes.ENVIRONMENT);
+  const [streamType, setStreamType] = useState<StreamTypes>(StreamTypes.BACK_CAMERA);
 
-  const getVideoStream = async () => {
+  const getVideoStream = useCallback(async () => {
+    setIsLoading(true);
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
+      let stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
+
+      if (isMobile) {
+        stream = streamType === StreamTypes.FRONT_CAMERA ? stream : await navigator.mediaDevices.getUserMedia({ video: { facingMode: { exact: 'environment' } } });
+      }
+
       const video = videoRef.current;
 
       if (video) {
@@ -27,10 +34,16 @@ function App() {
         setStream(stream);
       }
 
+      setIsLoading(false);
     } catch (error) {
       console.error("Error accessing camera: " + error);
+      setIsLoading(false);
     }
-  };
+  }, [videoRef, streamType]);
+
+  useEffect(() => {
+    getVideoStream();
+  }, [videoRef, streamType, getVideoStream]);
 
   const handleTakePhoto = () => {
     setHasPhoto(true);
@@ -38,8 +51,14 @@ function App() {
     const photo = photoRef.current;
     const context = photo?.getContext("2d");
 
-    const width = 414;
-    const height = width / (16 / 9);
+    let width = 414;
+    let height = width / (16 / 9);
+
+    if (isMobile) {
+      width = 300;
+      height = width / (16 / 9);
+    }
+
     if (video && context && photo) {
       photo.width = width;
       photo.height = height;
@@ -52,8 +71,6 @@ function App() {
       setStream(null);
     }
   };
-
-  useEffect(() => { getVideoStream() }, [videoRef]);
 
   const handleClearResult = () => {
     const photo = photoRef.current;
@@ -70,32 +87,34 @@ function App() {
 
   const toggleStreamType = () => {
     if (streamType === StreamTypes.FRONT_CAMERA) {
-      setStreamType(StreamTypes.FRONT_CAMERA);
-      return;
-    }
-    if (streamType === StreamTypes.BACK_CAMERA) {
       setStreamType(StreamTypes.BACK_CAMERA);
-      return;
+    } else {
+      setStreamType(StreamTypes.FRONT_CAMERA);
     }
-    setStreamType(StreamTypes.ENVIRONMENT);
   };
 
   return (
     <section
       className="relative w-full h-full min-h-[100vh] flex flex-col items-center justify-center gap-[20px]"
     >
-
       <MobileView>
         <div className="flex items-center justify-center">
-          <button onClick={toggleStreamType}>
+          <button
+            onClick={toggleStreamType}
+            className="border-[1px] border-solid border-[#18181a] bg-[#18181a] py-[5px] px-[10px] text-[#fff] transition hover:bg-[#fff] hover:text-[#18181a]"
+          >
             {streamType === StreamTypes.FRONT_CAMERA
-              ? 'Передная камера' : 'Заднея камера'}
+              ? 'Заднея камера' : 'Передная камера'}
           </button>
         </div>
       </MobileView>
 
       <div className="flex justify-center items-center">
-        <video ref={videoRef} className="w-[80%] h-[50%]"></video>
+        {!isLoading ?
+          <video ref={videoRef} className="w-[80%] h-[50%]"></video> :
+          <div>
+            <TbLoader3 className="text-[#18181a] text-[50px] animate-spin" />
+          </div>}
       </div>
 
       <div className='w-full flex justify-center'>
@@ -116,13 +135,15 @@ function App() {
           }`
         }
       >
-        <canvas ref={photoRef}></canvas>
-        <button
-          className="absolute top-[30.9%] left-[74%] w-[40px] h-[40px] text-[#fff] flex items-center justify-center rounded-[50%] border-[1px] border-solid border-[#18181a] bg-[#18181a] transition hover:bg-[#fff] hover:text-[#18181a]"
-          onClick={handleClearResult}
-        >
-          <IoMdClose className="text-[20px]" />
-        </button>
+        <div className="relative">
+          <canvas ref={photoRef}></canvas>
+          <button
+            className="absolute top-[-20%] right-0 w-[40px] h-[40px] text-[#fff] flex items-center justify-center rounded-[50%] border-[1px] border-solid border-[#18181a] bg-[#18181a] transition hover:bg-[#fff] hover:text-[#18181a]"
+            onClick={handleClearResult}
+          >
+            <IoMdClose className="text-[20px]" />
+          </button>
+        </div>
       </div>
     </section>
   )
