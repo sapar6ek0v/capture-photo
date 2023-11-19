@@ -13,12 +13,9 @@ body {
   background: #dcecf6;
 }
 
-/* .click-btn {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-} */
+button:disabled {
+  cursor: not-allowed;
+}
 
 .click-btn {
   position: relative;

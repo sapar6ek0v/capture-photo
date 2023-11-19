@@ -122,6 +122,7 @@ function App() {
         <button
           className="click-btn"
           onClick={handleTakePhoto}
+          disabled={isLoading}
         >
           <span className="text">скрин</span>
           <span>сделать снимок</span>
