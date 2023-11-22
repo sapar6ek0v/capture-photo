@@ -17,6 +17,10 @@ button:disabled {
   cursor: not-allowed;
 }
 
+video {
+  transform: scaleX(-1);
+}
+
 .click-btn {
   position: relative;
   overflow: hidden;
