@@ -12,21 +12,6 @@ const WebcamCapture = () => {
         height: 250,
         facingMode: "environment",
     });
-    const { width, height } = useWindowSize();
-
-    useEffect(() => {
-        const changeVideoConstraints = () => {
-            if (isMobile) {
-                setVideoConstraints({
-                    ...videoConstraints,
-                    width: width,
-                    height: height,
-                });
-            }
-        };
-
-        changeVideoConstraints();
-    }, []);
 
     const captureImage = useCallback(
         () => {
