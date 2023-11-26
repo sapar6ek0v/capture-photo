@@ -1,13 +1,11 @@
 import Webcam from "react-webcam";
-import { useCallback, useEffect, useRef, useState } from "react";
-import { isMobile } from "react-device-detect";
+import { useCallback, useRef, useState } from "react";
 import ImageViewerModal from "./ImageViewerModal.tsx";
-import { useWindowSize } from "../helpers/useWindowSize.ts";
 
 const WebcamCapture = () => {
     const webcamRef = useRef<Webcam>(null);
     const [imageSrc, setImageSrc] = useState<string>('');
-    const [videoConstraints, setVideoConstraints] = useState({
+    const [videoConstraints] = useState({
         width: 440,
         height: 250,
         facingMode: "environment",
